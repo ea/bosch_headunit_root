@@ -47,9 +47,36 @@ While firmware files and packages aren't encrypted, they are properly digitaly s
 
 ### Enumerating USB devices
 
-The intended use for the exposed USB port is for either for loading gigabytes of MP3s for those long drives, for playing your Spotify favorites via your smartphone or simply as a usb charger. That being said, it would be interesting to know if the headunit supports has drivers for and supports any additional devices. Usuall trick is to simply plug in a keyboard in hopes it would give you console access. We aren't so lucky in this case, but maybe the developers left something else that could be useful. We could try and plug in random USB devices that we have, but that list is usually relatively short. A more automated way to do this would be to use Facedancer and umap2. 
+The intended use for the exposed USB port is for either for loading gigabytes of MP3s for those long drives, for playing your Spotify favorites via your smartphone or simply as a usb charger. That being said, it would be interesting to know if the headunit supports has drivers for and supports any additional devices. Usuall trick is to simply plug in a keyboard in hopes it would give you console access. We aren't so lucky in this case, but maybe the developers left something else that could be useful. We could try and plug in random USB devices that we have, but that list is usually relatively short. A more automated way to do this would be to use [Facedancer and umap2](https://github.com/nccgroup/umap2). Facedancer can emulate diferent USB devices so one can simply cycle through different VID and PID values to detect which devices are supported by the host. Umap2 comes with a script called `umap2vsscan` which does just that:
+
+```
+umap2vsscan -P fd:/dev/ttyUSB0 -d $UMAP2_DIR/data/vid_pid_db.py
+```
+
+This would scan through a huge list of known VID and PID combinations and will print out the corresponding device (and Linux driver from which VID/PID came from). Since this can take quite a while, we can filter out this list a bit to focuse on what's interesting to us. There's basically two types of devices I'd be interested in finding support for: a TTL2USB adapter (like FTDI serial cables) that would somehow be connected to serial console by udev or something, or a USB network adapter that would hopefully be autoconfigured, or would take an address via DHCP. Editing the list that comes with umap2 to only contains those leaves us with about 1000 devices, which is acceptable and doable in reasonable time, just be careful no to kill your car battery while waiting for this to finish. 
+
+With patience , we get the following result:
+
+```
+[ALWAYS] Found 1 supported device(s) (out of 1098):
+[ALWAYS] 0. vid:pid 077b:2226, vendor: Linksys, product: USB200M 100baseTX Adapter,
+driver: drivers/net/usb/asix_devices.c, info: device not reached set configuration state
+```
+
+This is great news. Driver `asix_devices.c` is used by a very very common USB ethernet adapter. Chances are your local electronics store has one randomly branded for about $10. I found this one that suits the purpose:
+
+<insert photo of usb ethernet adapter>
+
+One of the ways to make sure, before purchasing, the usb ethernet adapter indeed uses `asix_devices` driver is to search the manufacturer's website for Linux drivers. Although mostly useless because every linux installation will already come with it built in, you can often find a tarball that contains the driver the device uses. 
+
+Now the question is if it will actually work. Plug the usb ethernet adapter into car's USB port, connect it via ethernet cable to your laptop and observe the LEDs turn on! The device seems to be initialized, but there are no DHCP requests. Sniffing the network with Wireshark, though, reveals that something is sending packets from IP `172.17.0.1`. Further more, it seems to be sending out TCP SYN packets to port 7000 with destination address `172.17.0.5`. It seems like the lcn2kai expect the other end of ethernet connection to have `172.17.0.5` assigned and indeed configuring laptop's ethernet port with this static IP seems to work. Starting up netcat to listen on port 7000 and it will get a connection from lcn2kai which will send a bunch of binary data. It will later be revealed that this is part of a tracing framework, possibly used to aid debugging during development. 
+
+At this point, I was hoping to find some sort of server listening on some port that would serve as a good attack point, but no such luck. Scanning the device via Nmap reveals that all but one port are blocked by firewall. That one port is 22, for SSHd, but even though it's not blocked by firewall, nothing is listening on it. This is good news, though. It means we'll have an easy way of connecting to the system once we enable SSH server. 
 
 ## Getting dirty 
+
+
+
 ### Finding serial console
 ### Root via u-boot & ssh
 ## An accessible vulnerability
