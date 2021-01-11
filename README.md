@@ -47,7 +47,11 @@ While firmware files and packages aren't encrypted, they are properly digitaly s
 
 ### Enumerating USB devices
 
-The intended use for the exposed USB port is for either for loading gigabytes of MP3s for those long drives, for playing your Spotify favorites via your smartphone or simply as a usb charger. That being said, it would be interesting to know if the headunit supports has drivers for and supports any additional devices. Usuall trick is to simply plug in a keyboard in hopes it would give you console access. We aren't so lucky in this case, but maybe the developers left something else that could be useful. We could try and plug in random USB devices that we have, but that list is usually relatively short. A more automated way to do this would be to use [Facedancer and umap2](https://github.com/nccgroup/umap2). Facedancer can emulate diferent USB devices so one can simply cycle through different VID and PID values to detect which devices are supported by the host. Umap2 comes with a script called `umap2vsscan` which does just that:
+The intended use for the exposed USB port is for either for loading gigabytes of MP3s for those long drives, for playing your Spotify favorites via your smartphone or simply as a usb charger. That being said, it would be interesting to know if the headunit supports has drivers for and supports any additional devices. Usuall trick is to simply plug in a keyboard in hopes it would give you console access. 
+
+One easy trick to check if keyboard is supported at all (if the underlying system is Linux) is to issue a [Magic SysRq Key](https://en.wikipedia.org/wiki/Magic_SysRq_key) sequence to try and reboot the system. This actually does work on lcn2kai, but it turns out that the keyboard isn't connected to the console at all. So while kernel does process SysRq keys, it's otherwise useless. 
+
+We could try and plug in random USB devices that we have, but that list is usually relatively short. A more automated way to do this would be to use [Facedancer and umap2](https://github.com/nccgroup/umap2). Facedancer can emulate diferent USB devices so one can simply cycle through different VID and PID values to detect which devices are supported by the host. Umap2 comes with a script called `umap2vsscan` which does just that:
 
 ```
 umap2vsscan -P fd:/dev/ttyUSB0 -d $UMAP2_DIR/data/vid_pid_db.py
@@ -75,7 +79,7 @@ At this point, I was hoping to find some sort of server listening on some port t
 
 ## Getting dirty 
 
-
+I've explored some other, obvious, venues of attack in hope of striking gold randomly. These included various attempts at command injection via file system names, phone bluetooth IDs , special files on the drives... None of it worked immediately. 
 
 ### Finding serial console
 ### Root via u-boot & ssh
