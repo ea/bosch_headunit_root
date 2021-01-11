@@ -79,7 +79,23 @@ At this point, I was hoping to find some sort of server listening on some port t
 
 ## Getting dirty 
 
-I've explored some other, obvious, venues of attack in hope of striking gold randomly. These included various attempts at command injection via file system names, phone bluetooth IDs , special files on the drives... None of it worked immediately. 
+I've explored some other, obvious, venues of attack in hope of striking gold randomly. These included various attempts at command injection via file system names, phone bluetooth IDs , special files on the drives... None of it worked immediately. It was time to get a test device and take a peak inside, to try to get a shell with physical access. 
+
+You can easily find lcn2kai head units on eBay. If they are from a wrecked car, or are missing a button or two, you can get the pretty cheaply. That's what I did and this one showed up at my doorstep a few days later. 
+
+<insert picture of standalone unit>
+  
+Powering on the unit is straightforward. It takes 12V and needs just over 1 amp at most, so any bench power supply will work nicely. To get the unit to power on, besides Vcc and GND , an Ignition pin must be connected to Vcc. 
+
+<insert picture of the back with labels>
+  
+In addition to power, we should take the time to break out the USB port , too. If you are lucky , you eBay purchase could come with a cable harness already. Mine didn't. 
+
+After taking the whole unit apart, we can see that the important bits are on the underside, with the sheet metal body serving as a large heat sink. 
+
+<insert picture of the board>
+  
+  
 
 ### Finding serial console
 ### Root via u-boot & ssh
