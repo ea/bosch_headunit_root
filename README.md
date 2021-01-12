@@ -410,7 +410,94 @@ We are in, as they say.
 
 ## An accessible vulnerability
 
+So far, we've gotten a shell on our test unit that's sitting on our workbench. That's great, but as I said in the outline, I would like to skip taking my dashboard apart if I could help it. I can only imagine it has a bunch of plastic clips all over the place that I'll surely break and then things will rattle forever... It'd be nice if we could now use this shell access to figure out a way to get shell in a more accessible way. 
 
-## Non-invasive exploit and enabling remote shell
+As previously outlined, attack surface is largely the same (USB port and Bluetooth being obvious vectors), but now we can examine how the system works. I'll spare you the details of all the things I've tried, but the whole process is very reminiscent of old shell based wargames where you are looking for a way to elevate your privileges. 
+
+As mentioned, one avenue of attack is via USB flash memory support for music. As you would expect from any car head unit, once you plug in a flash drive, the system will auto-mount it and scan it for multimedia it supports. There are many ways to do this, and likely as many ways to screw it up, so it would do us good to figure out how lcn2kai does this. 
+
+On Linux, UDEV scripts are where one would start examining this. And indeed, in `etc/udev/scripts` we find the following:
+
+```
+root@bosch-nemid:/etc/udev/scripts# ls
+monitor.sh  mount.sh  network.sh  not_mount.sh	trace_proxy.sh
+```
+
+All of these are very interesting in informing us how the whole system behaves, but we'll dig into `mount.sh`. As one would expect, it's a fairly simple script which gets called when a mass media USB device is detected in order to determine it's filesystem and mount it at the appropriate place. I'll quote just the relevant part of the code:
+
+```
+automount() {
+    if [ -z "${ID_FS_TYPE}" ]; then
+	logger -p user.err "mount.sh/automount" "$DEVNAME has no filesystem, not mounting"
+	return
+    fi
+
+    # Determine the name for the mount point.  First check for the
+    # uuid, then for the label and then for a unique name.
+    if [ -n "${ID_FS_UUID}" ]; then
+	mountdir=${ID_FS_UUID}
+    elif [ -n "${ID_FS_LABEL}" ]; then
+	mountdir=${ID_FS_LABEL}
+    else
+	mountdir="disk"
+	while [ -d $MOUNTPT/$mountdir ]; do
+	    mountdir="${mountdir}_"
+	done
+    fi
+...
+...
+...
+   result=$($MOUNT -t ${ID_FS_TYPE} -o sync,ro$IOCHARSET $DEVNAME "$MOUNTPT/$mountdir" 2>&1)
+```
+
+At the start of `automount` option, the script tries to determine the mount point. MOUNTPT var points to "/dev/media" , the actuall mount point for the drive is `$MOUNTPT/$mountdir` and there's a couple of options on how `$mountdir` is determined. There's three options. First, FS UUID is used as a mount point, if it exists. If not, FS Label is used , if it exists. And finally, if neither FS UUID nor FS Label exist , mountdir `disk` is simply used. Finally , `mount` command is executed in the last line. This final line would be a good place to examine for any command injection vulnerabilities, but it would appear that any controllable data is properly quoted. But, not all is lost!
+
+Can we somehow force directory traversal in mount point ? Final mountpoint is `$MOUNTPT/$mountdir`, if `$mountdir` could somehow contain `../` , it could lead to directory traversal, which we could potentially abuse. Going back to how `$mountdir` is determined, even though we can control UUID, it's basically a HEX string on all file systems, so that can't lead to dir traversal, but `ID_FS_LABEL` can contain arbitrary data! So, all we need to do to abuse this issue is make a flash drive with a file system that has no UUID and has an FS Label of the form "../../some/other/path". When that gets extended `$MOUNTPT/$mountdir` would actually become `/dev/media/../../some/other/path` or `/some/other/path`. If that actually works, it would mean we could get contents of our flash drive to be mounted anywhere over root file system. That seems like an easy path to success.
+
+The plan has a couple of steps. First is to create a flash drive with ext2 file system as we can be sure ext2 is supported and anything we put on it would keep +x bit unless additional options to `mount` are specified. Then make it not have a UUID which can be simply achieved by zeroing out the UUID in the ext2 header. Then, the FS label needs to be set to exploit the directory traversal to mount it over something that would lead to code execution. Looking up further down the `mount.sh` script would show the following:
+
+```
+result=$($MOUNT -t ${ID_FS_TYPE} -o sync,ro$IOCHARSET $DEVNAME "$MOUNTPT/$mountdir" 2>&1)
+    status=$?
+    if [ ${status} -ne 0 ]; then
+	logger -p user.err "mount.sh/automount" "$MOUNT -t ${ID_FS_TYPE} -o sync,ro $DEVNAME \"$MOUNTPT/$mountdir\" failed: ${result}"
+	rm_dir "$MOUNTPT/$mountdir"
+    else
+	logger "mount.sh/automount" "mount [$MOUNTPT/$mountdir] with type ${ID_FS_TYPE} successful"
+	mkdir -p ${MOUNTDB}
+	echo -n "$MOUNTPT/$mountdir" > "${MOUNTDB}/$devname"
+    fi
+```
+
+So, right after the file system is mounted (successfully or unsuccessfully), command `logger` is executed to log the message. Command `logger` is in `/usr/bin`:
+```
+# which logger
+/usr/bin/logger
+```
+
+If we choose this as a target, our FS label would be `../../usr/bin/`. Finally, the prepared flash drive would need to contain a single file called `logger` with +x set on it. This file will be a simple shell script that would install enable SSH server just like we did manually in the previous section. The script can be something like this:
+
+```
+#make a file on the usb flash so we know if execution happened
+touch /usr/bin/itworked
+#remount root FS as RW 
+mount -o remount,rw /
+#enable sshd
+echo "/etc/init.d/sshd start" >> /etc/init.d/fastboot/prj_boschinit.sh
+#just for good measure
+sync
+sync 
+```
+
+Now, with usb flash drive in hand, we can walk to the car, turn the car on , wait for the infotainment system to fully boot up, insert the USB drive, count to 15 and turn off the car. If all went well, the flash drive should now contain an additional file named `itworked`. Turn off the car and wait for a minute or two for lcn2kai to full power down. Power it back up again, wait a minute , connect the ethernet addapter and try to connect to SSH. If all went well, you should be greeted with a root shell. Simple as that.
+
+This repository should contain a script that would create a suitable file system to put on a flash drive that would make this straightforward. 
+
 ## Where from here
+
+Once I got this non-invasive root shell it was time to dig deeper into the system to figure out how it work. Other documents in this repository will document how various other details of lcn2kai head unit work, how they can be accessed and interacted with and how custom applications can be written. 
+
+The idea with releasing this writeup is to enable others to thinker on their own car's head units which woudl hopefully result in more interesting features being implemented. There's hundreds of thousands of these in many models of cars out there and the fact that they are out of warranty and out of support from the manufacturer doesn't mean they are completely obsolete! 
+
+
 
