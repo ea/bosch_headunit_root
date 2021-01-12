@@ -12,16 +12,17 @@ One of the features I wanted to see is a simple GPS data logger and that idea wi
 I will share the code to reproduce this on your vehicle and a sample application that achieves the GPS data logging goal. However, here **you will find ABSOLUTELY NO information about bypassing any DRM/copyright mechanisms**, especially related to navigation maps and any online services. Moverover, any code or instructions herein come with no warranty and you follow them at your own risk. 
 
 #### Table Of Contents
-- [Cars running lcn2kai](#Cars running lcn2kai)
-- [Attack surface](#Attack surface)
-  * [Secret menu](#Secret menu)
-  * [Firmware update](#Firmware update)
-  * [Enumerating USB devices](#Enumerating USB devices)
-- [Getting dirty](#Getting dirty)
-  * [Finding serial console](#Finding serial console)
-  * [Root via u-boot & ssh](#Root via u-boot & ssh)
-- [An accessible vulnerability](#An accessible vulnerability)
-- [Where from here](#Where from here)
+
+- [Cars running lcn2kai](#cars-running-lcn2kai)
+- [Attack surface](#attack-surface)
+  * [Secret menu](#secret-menu)
+  * [Firmware update](#firmware-update)
+  * [Enumerating USB devices](#enumerating-usb-devices)
+- [Getting dirty](#getting-dirty)
+  * [Finding serial console](#finding-serial-console)
+  * [Root via u-boot & ssh](#root-via-uboot-and-ssh)
+- [An accessible vulnerability and non invasive exploit](#an-accessible-vulnerability-and-non-invasive-exploit)
+- [Where from here](#where-from-here)
 
 ## Cars running lcn2kai
 
@@ -169,7 +170,7 @@ Alright, we are getting somewhere. We can spot a bunch of useful information fro
 
 This arrangement sort of makes sense, an RTOS to handle timing-sensitive stuff like CANbus data , and a regular OS (Linux) to handle UI, networking , multimedia...
 
-### Root via u-boot & ssh
+### Root via UBoot and SSH
 
 Now that we have console access , we can let the system boot up fully. After Linux is booted, the usual init system starts a number of services as expected but doesn't actually end up in a shell. We still have no way of interacting with it. Notice, however, in the above bootlog the line that says `Hit any key to stop autoboot:  0`. Usually, U-Boot will be configured with a short timeout to wait for any key stroke to interrup the regular boot process. In this case the timeout is 0, so the boot proceeds right away, but in some cases it can still  be interrupted. One can try to bash the keyboard to send data to the serial port while powering on the device in hopes of interrupting the boot process by chance, but a simple oneliner usually does the job:
 
@@ -420,7 +421,7 @@ root@(none):~#
 
 We are in, as they say.
 
-## An accessible vulnerability
+## An accessible vulnerability and non invasive exploit
 
 So far, we've gotten a shell on our test unit that's sitting on our workbench. That's great, but as I said in the outline, I would like to skip taking my dashboard apart if I could help it. I can only imagine it has a bunch of plastic clips all over the place that I'll surely break and then things will rattle forever... It'd be nice if we could now use this shell access to figure out a way to get shell in a more accessible way. 
 
