@@ -510,7 +510,7 @@ This repository should contain a script that would create a suitable file system
 
 Once I got this non-invasive root shell it was time to dig deeper into the system to figure out how it work. Other documents in this repository will document how various other details of lcn2kai head unit work, how they can be accessed and interacted with and how custom applications can be written. 
 
-The idea with releasing this writeup is to enable others to thinker on their own car's head units which woudl hopefully result in more interesting features being implemented. There's hundreds of thousands of these in many models of cars out there and the fact that they are out of warranty and out of support from the manufacturer doesn't mean they are completely obsolete! 
+The idea with releasing this writeup is to enable others to thinker on their own car's head units which would hopefully result in more interesting features being implemented. There's hundreds of thousands of these in many models of cars out there and the fact that they are out of warranty and out of support from the manufacturer doesn't mean they are completely obsolete! 
 
 
 
