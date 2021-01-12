@@ -11,6 +11,18 @@ One of the features I wanted to see is a simple GPS data logger and that idea wi
 
 I will share the code to reproduce this on your vehicle and a sample application that achieves the GPS data logging goal. However, here **you will find ABSOLUTELY NO information about bypassing any DRM/copyright mechanisms**, especially related to navigation maps and any online services. Moverover, any code or instructions herein come with no warranty and you follow them at your own risk. 
 
+#### Table Of Contents
+- [Cars running lcn2kai](#Cars running lcn2kai)
+- [Attack surface](#Attack surface)
+  * [Secret menu](#Secret menu)
+  * [Firmware update](#Firmware update)
+  * [Enumerating USB devices](#Enumerating USB devices)
+- [Getting dirty](#Getting dirty)
+  * [Finding serial console](#Finding serial console)
+  * [Root via u-boot & ssh](#Root via u-boot & ssh)
+- [An accessible vulnerability](#An accessible vulnerability)
+- [Where from here](#Where from here)
+
 ## Cars running lcn2kai
 
 I would like to build an expanded list of headunits and car makes/models/years that are affected by the bug we'll abuse to gain root shell access with. So far, that list includes numerous Nissan models from around 2015 onward including Xterra, Rogue, Sentra, Altima, Frontier as well as some other Nissan comercial vehicles. Given that the head unit in question is manufactured by Bosch, chances are that the same platform can be found in many other vehicles. 
