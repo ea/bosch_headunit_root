@@ -116,5 +116,42 @@ I'd really like to know the reason for this form of encoding.
 
 ## Putting it all together
 
+Node script `gps_hup.js` in this repository basically does just what we described. It mimics Airbiquity and starts an lazy HTTP server and a notification request/reply channel. It logs recieved messages to the files with name of the form `gpshup-<timestamp>.json` which can later be processed and viewed. 
+
+As mentioned at the beggining, I wanted all the custom code to be on a USB flash drive (which is also where the logs will be stored). In order to set it up, you'll need a spare USB flash drive formated with ext2. Then you need to modify lcn2kai scripts to actually run `gpshup.js`. To do so, you should do the following:
+
+1. log into lcn2kai via ssh
+2. remount root file system as RW 
+```
+$ mount -o remount,rw / 
+```
+3. Figure out where the USB flash drive with `gpshup.js` will be mounted at
+  - it will be mounted at `/dev/media/<UUID>/`, to figure out UUID you can use `blkid` on your laptop
+4. Modify  `/bin/node` to check for flash drive presence on startup to something like
+
+```
+if [ -f "/dev/media/ INSERT_YOUR_UUID_HERE /gpshup.js"  ]
+then
+       mount -o remount,rw /dev/media/ INSERT_YOUR_UUID_HERE /
+        /opt/bosch/airbiquity/node /dev/media/ INSERT_YOUR_UUID_HERE /gpshup.js
+else
+
+/opt/bosch/airbiquity/node /opt/bosch/airbiquity/hup/hup.js | trace_tool -c 45578 -l 8
+
+fi 
+```
+5. Save and shut down lcn2kai. 
+6. Copy `gpshup.js` to your USB flash drive. 
+7. Plug in USB flash drive into the car.
+8. Turn on the head unit. 
+
+If there were no errors in this process, lcn2kai should detect the flash drive on startup, and `/bin/node` script will execute `gpshup.js` instead of original one. If you go to `Apps` menu on the head unit, you should see the default app list deplaced with blank screen with HUP messages in blue:
+
+<insert photo of gpshup>
 
 
+Now it's time to drive around and  log some GPS data. 
+
+## Viewing GPS data
+
+Now that you've collected some GPS logs on the flash drive , it would be nice to convert them into some more usable file format. As they are, the log files will be a JSON file with an array of different HUP messages, most of them navigation data updates. Script `s32latlong_convert.py` converts these into GPX file format. GPX is a standard GPS data exchange format and most vizualization and editing tools support it. For example, you can use `gpsprune` to load, vizualize on a map and edit the recorded files. You can use `GPX-Animator` to create videos of your recorded drive. 
