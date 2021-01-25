@@ -56,3 +56,38 @@ Linux (none) 2.6.34.13-02018-g843e5c6 #1 SMP PREEMPT Thu May 15 16:58:54 IST 201
 That really confirms that code execution has worked and that SSHd should be enabled on the car's head unit. 
 
 ## Connecting via network
+
+Now that the usb flash exploit has been executed, the SSH daemon should be enabled and we should be able to connect to the head unit remotely. There are only two requirements, a specific network adapter and static IP config. As the main writeup explains, only a limited number of devices are supported. If you don't already have one, you will need to obtain a USB Ethernet adapter that's based on ASIX `AX88772B` controller. These are fairly common and I've used this generic one branded as `Manhattan USB 2.0 Fast Ethernet Adapter` which should be around $10. Whichever one you get, test it out on your linux machine to make sure it has the correct controller. You should see something like the following in `dmesg` output:
+
+```
+[388457.942658] usb 3-2: New USB device found, idVendor=0b95, idProduct=772b, bcdDevice= 0.01
+[388457.942663] usb 3-2: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+[388457.942666] usb 3-2: Product: AX88772B
+[388457.942669] usb 3-2: Manufacturer: ASIX Elec. Corp.
+[388457.942671] usb 3-2: SerialNumber: 000006
+[388458.965005] asix 3-2:1.0 eth0: register 'asix' at usb-0000:00:14.0-2, ASIX AX88772B USB 2.0 Ethernet, 00:6f:00:01:24:09
+[388458.965145] usbcore: registered new interface driver asix
+[388458.990310] asix 3-2:1.0 enx006f00012409: renamed from eth0
+```
+
+Next , you'll need to configure ethernet interface on your laptop to have a static IP address. By default, `lcn2kai` is configured with address `172.17.0.1` and netmask 255.255.0.0 , so on laptop side we want 172.17.0.5 as a static IP (other lcn2kai services expect debug system to be at .5 ). When you have the static IP set up, plug the USB Ethernet adapter into car's USB port and connect it via ethernet cable to your laptop. Turn on the system and once it's fully booted up (it might take a while for all of init.d to be done and sshd actually starts) you should be able to simply ssh into lcn2kai:
+
+```
+$ ssh root@172.17.0.1
+!! The root file system is READ-ONLY !!
+root@(none):~# uname -a
+Linux (none) 2.6.34.13-02018-g843e5c6 #1 SMP PREEMPT Thu May 15 16:58:54 IST 2014 armv6l GNU/Linux
+root@(none):~# cat /
+/                     /etc/                 /media/               /rfs_version.txt      /usr/
+/Settings/            /home/                /mnt/                 /sbin/                /var/
+/bin/                 /include/             /share/
+/boot/                /lcn2kai_version.txt  /opt/                 /shared/
+/cc_label.txt         /lib/                 /proc/                /sys/
+/dev/                 /lost+found/          /rfs2/                /tmp/
+root@(none):~# cat /lcn2kai_version.txt
+AI_PRJ_NISSAN_LCN2KAI_13.14V12
+root@(none):~#
+```
+
+Now you can look around, edit configuration files and make yourself more comfortable. 
+
