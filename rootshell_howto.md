@@ -91,3 +91,12 @@ root@(none):~#
 
 Now you can look around, edit configuration files and make yourself more comfortable. 
 
+## Testing on other models
+
+Let's assume you have a head unit model that's similar to lcn2kai, or an lcn2kai that's a different version. It would be nice if we could run a simple test, that doesn't modify anything on the system, that would tell us if the same exploit works. Script `testfs.sh` does the same thing as `rootshellfs.sh` but ommits any changes to the file system. Instead , it exploits the same vulnerability but only to create a `it_worked` file on the flash drive. 
+
+So, to first test the exploitability, use `testfs.sh` script to create a test file system to write to your USB flash drive, plug it into your car as described above and then check if the system rebooted and if the flash drive now contains `it_worked` file with kernel version. 
+
+Of course, things could fail for numerous reasons, but this should be a good starting point. For one, even if same udev scripts are vulnerable to dir traversal when mounting a flash drive, `logger` might not be the next command, so some debugging could be required. 
+
+
