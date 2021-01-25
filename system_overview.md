@@ -5,6 +5,7 @@ In this document, I'll gather all the information about lcn2kai system that coul
 - [U-boot log](#u-boot-log)
 - [DualOS](#dualos)
 - [System and processes](#system-and-processes)
+- [Airbiquity middleware](#airbiquity-middleware)
 
 # U-Boot log
 
@@ -337,6 +338,28 @@ root       522  0.0  0.1   3552   852 ?        S<   00:00   0:00 trace_tool -c 4
 Process `trace_be`, for trace back end, is started on system startup and is constantly trying to connect to 172.17.0.5:7000 and if we start listening on that port on the laptop, it will actually start sending binary data. 
 Trace backend can also log textual debug info whose verbosity can be controlled through init scripts and `etc` configs. This should be reversed and documented more thoroughly. 
 
+## Airbiquity middleware
+
+As previously mentioned, to enable smartphone integration and internet connectivity, lcn2kai uses a version of Airbiquity's middleware. Here we'll quickly describe how it works. 
+
+On the lcn2kai side, middleware is written in NodeJS and is started on startup via `/bin/node` script. The actuall application is located in `/opt/bosch/Airbiquity/hup`. HUP stans for "Head Unit P?". As is usual with node apps, it's minified , but it's still easy to follow what's going on. It does the following:
+ - Starts a HTTP server that serves contents of `/var/opt/bosch/dynamic/airbiquity`
+ - Wraps HTTP server in socket.io 
+ - Starts a notification IPC channel 
+   - bound to localhost:8124
+   - exchanges notification with `procsmartphone_out`
+ 
+ When a phone connects to lcn2kai via bluetooth a number of things happen. Airbiquity HUP gets notified and starts setting up further communication with the phone:
+ - Phone with SPP (Serial Port Profile) connects via bluetooth
+ - HUP gets notified by `procsmartphone_out` via the established IPC channel
+ - HUP tries to set up a SLIP (IP over serial line) tunnel via `rfcomm` and `slattach` which brings up a new network interface
+ - network interface gets configured with `192.168....` 
+ - ...
+ - Phone App communicates with HUP through this IP tunnel by issuing API requests to the HTTP server
+ 
+ These are all nice features to know and possibly some that can be reused for custom extensions. 
+ 
+ It should be pointed out that HTTP server brought up by Airbiquity isn't immediatelly accessible over "regular" network interface, as it is firewalled. If you want to access it `iptabled -D INPUT 5` would drop the blocking FW rule. lcn2kai will display the webpage served by this HTTP server when you open the `Apps` menu in settings. Unless you have a working Nissan Connect app on your phone, the `Apps` won't actually do anything, but the webpage can be replaced with custom text. 
 
 
 
