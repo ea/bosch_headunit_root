@@ -1,3 +1,4 @@
+//WARNIGN: uses old ES dialect, lots of newer syntactic suggar is not supported 
 const http = require('http');
 const net = require('net');
 const fs = require('fs');
