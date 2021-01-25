@@ -1,0 +1,5 @@
+mount -o remount,rw /usr/bin/
+uname -a > /usr/bin/it_worked
+sync
+sync
+reboot
