@@ -1,0 +1,7 @@
+mount -o remount,rw /
+mount -o remount,rw /usr/bin/
+echo "/etc/init.d/sshd start" >> /etc/init.d/fastboot/prj_boschinit.sh
+uname -a > /usr/bin/it_worked
+sync
+sync
+reboot
