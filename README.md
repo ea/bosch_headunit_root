@@ -11,6 +11,14 @@ One of the features I wanted to see is a simple GPS data logger and that idea wi
 
 I will share the code to reproduce this on your vehicle and a sample application that achieves the GPS data logging goal. However, here **you will find ABSOLUTELY NO information about bypassing any DRM/copyright mechanisms**, especially related to navigation maps and any online services. Moverover, any code or instructions herein come with no warranty and you follow them at your own risk. 
 
+For a quick guide on how to root your own Nissan head unit follow: [Rootshell How-To](docs/rootshell_howto.md)
+
+For an overview of the whole system: [System overview](docs/system_overview.md)
+
+For a sample custom extension: [Example of a custom extension - GPS logger](docs/custom_apps_and_gps.md)
+
+
+
 #### Table Of Contents
 
 - [Cars running lcn2kai](#cars-running-lcn2kai)
