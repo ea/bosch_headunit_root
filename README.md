@@ -60,6 +60,8 @@ Writeups on jailbreaking and rooting other car infotainment systems and headunit
 
 There have been various versions of firmware updates for lcn2kai shared on random online forums that were obtained one way or the other. Head unit I'm working on haven't been updated since it was sold, parts relevant to this writeup remain unchanged on all versions. 
 
+![version info](images/02_version_info.bmp)
+
 Firmware update is performed by first plugging in a USB stick that contains firmware update images and then entering the secret menu, selecting the update/upgrade option and following instructions. When the upgrade process is initiated, the system reboots into an upgrade mode, performs thorough cryptographic validation on supplied firmware upgrade files and only then proceeds to copy/flash/update. 
 
 While firmware files and packages aren't encrypted, they are properly digitaly signed. Every component of the firmware upgrade (kernel, boot loader, linux file system...) is hashed and signed via standard public key cryptography algorithms and the whole scheme looked solid. I cautiously want to stay clear of trying to break any DRM, so I decided to move on with a bookmark to return to this process if all else fails. 
