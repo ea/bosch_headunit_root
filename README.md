@@ -108,7 +108,7 @@ You can easily find lcn2kai head units on eBay. If they are from a wrecked car, 
   
 Powering on the unit is straightforward. It takes 12V and needs just over 1 amp at most, so any bench power supply will work nicely. To get the unit to power on, besides Vcc and GND , an Ignition pin must be connected to Vcc. 
 
-![backside](images/07_backside.jpg)
+![backside](images/07_backside.png)
   
 In addition to power, we should take the time to break out the USB port , too. If you are lucky , you eBay purchase could come with a cable harness already. Mine didn't. 
 
