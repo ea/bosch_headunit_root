@@ -145,10 +145,20 @@ fi
 7. Plug in USB flash drive into the car.
 8. Turn on the head unit. 
 
-If there were no errors in this process, lcn2kai should detect the flash drive on startup, and `/bin/node` script will execute `gpshup.js` instead of original one. If you go to `Apps` menu on the head unit, you should see the default app list deplaced with blank screen with HUP messages in blue (not my coordinates, probably a salvage yard that sold this unit on ebay):
+If there were no errors in this process, lcn2kai should detect the flash drive on startup, and `/bin/node` script will execute `gpshup.js` instead of original one. If you go to `Apps` menu on the head unit, you should see the default app list deplaced with blank screen with HUP messages in blue (dark blue , so it doesn't poke the eyes too much during night as it's only for debugging anyway):
 
 ![gpshup](../images/04_gpshup_app.bmp)
 
+We can convert those into actuall longitude and lattitude:
+
+```
+>>> convert_s32latlong(-984979627)
+-82.56003863643932
+>>> convert_s32latlong(360157710)
+30.188070475124103
+```
+
+Those aren't my coordinates, btw. Since the head unit on my bench doesn't have a GPS antenna, it defaults to last known location which is probably a salvage yard that sold it to me over ebay.
 
 Now it's time to drive around and  log some GPS data. 
 
