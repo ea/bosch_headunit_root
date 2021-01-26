@@ -1,6 +1,6 @@
 # Rooting Bosch lcn2kai Headunit
 
-<insert rooted unit pic>
+![Rooted unit](images/00_rooted_head_unit.jpg)
   
 
 My Nissan Xterra came with a (for the time) modern head unit that has a touch screen, built-in navigation, backup camera display, multimedia features and smartphone connectivity. Some of the more advanced features are only available through NissanConnect App which requires registration and subscription. I've never used it and I'm not even sure if it's still supported. 
@@ -52,7 +52,7 @@ Looking at it, as installed in a car, headunit's interaction with the outside wo
 
 A "secret" operator menu can be accessed by pressing and holind "App" button, then rotating the "TUNE" knob anti-clockwise a couple of clicks, then clockwise , then anticlockwise again. When this cheat code is entered, a new menu is opened that has several diagnostics options, head unit version information as well as a firmware update option.
 
-<insert menu photo>
+![menu image](images/01_secret_menu.bmp)
 
 ### Firmware update
 
@@ -61,8 +61,6 @@ Writeups on jailbreaking and rooting other car infotainment systems and headunit
 There have been various versions of firmware updates for lcn2kai shared on random online forums that were obtained one way or the other. Head unit I'm working on haven't been updated since it was sold, parts relevant to this writeup remain unchanged on all versions. 
 
 Firmware update is performed by first plugging in a USB stick that contains firmware update images and then entering the secret menu, selecting the update/upgrade option and following instructions. When the upgrade process is initiated, the system reboots into an upgrade mode, performs thorough cryptographic validation on supplied firmware upgrade files and only then proceeds to copy/flash/update. 
-
-<insert firmware upgrade photos>
 
 While firmware files and packages aren't encrypted, they are properly digitaly signed. Every component of the firmware upgrade (kernel, boot loader, linux file system...) is hashed and signed via standard public key cryptography algorithms and the whole scheme looked solid. I cautiously want to stay clear of trying to break any DRM, so I decided to move on with a bookmark to return to this process if all else fails. 
 
@@ -90,7 +88,7 @@ driver: drivers/net/usb/asix_devices.c, info: device not reached set configurati
 
 This is great news. Driver `asix_devices.c` is used by a very very common USB ethernet adapter. Chances are your local electronics store has one randomly branded for about $10. I found this one that suits the purpose:
 
-<insert photo of usb ethernet adapter>
+![usb ethernet](images/09_usb_ethernet.jpg)
 
 One of the ways to make sure, before purchasing, the usb ethernet adapter indeed uses `asix_devices` driver is to search the manufacturer's website for Linux drivers. Although mostly useless because every linux installation will already come with it built in, you can often find a tarball that contains the driver the device uses. 
 
@@ -104,21 +102,21 @@ I've explored some other, obvious, venues of attack in hope of striking gold ran
 
 You can easily find lcn2kai head units on eBay. If they are from a wrecked car, or are missing a button or two, you can get the pretty cheaply. That's what I did and this one showed up at my doorstep a few days later. 
 
-<insert picture of standalone unit>
+![standalone unit](images/08_standalone_unit.jpg)
   
 Powering on the unit is straightforward. It takes 12V and needs just over 1 amp at most, so any bench power supply will work nicely. To get the unit to power on, besides Vcc and GND , an Ignition pin must be connected to Vcc. 
 
-<insert picture of the back with labels>
+![backside](images/07_backside.jpg)
   
 In addition to power, we should take the time to break out the USB port , too. If you are lucky , you eBay purchase could come with a cable harness already. Mine didn't. 
 
 After taking the whole unit apart, we can see that the important bits are on the underside, with the sheet metal body serving as a large heat sink. 
 
-<insert picture of the board>
+![mainboard](images/06_mainboard.jpg)
   
 Several groups of components can be distinguished on the board. There's an STMicro FM/AM/audio IC to the left, Maxim GPS mid-top and an Altera for SiriusXM I presume? Main CPU is ARM, manufactured by NEC by the looks of it. I couldn't find a specific datasheet for this one, but we'll be able to gather some more info later. Right by the main CPU are two unpopulated headers. Upper of these two actually lines up with a covered hole on the bottom of the metal case which would suggest it was intended to be pupulated with a debug header of some sort and used during development. 
 
-<insert picture of the underside>
+![unserside](images/05_underside.jpg)
 
 ### Finding serial console
 
