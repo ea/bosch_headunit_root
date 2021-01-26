@@ -165,3 +165,6 @@ Now it's time to drive around and  log some GPS data.
 ## Viewing GPS data
 
 Now that you've collected some GPS logs on the flash drive , it would be nice to convert them into some more usable file format. As they are, the log files will be a JSON file with an array of different HUP messages, most of them navigation data updates. Script `s32latlong_convert.py` converts these into GPX file format. GPX is a standard GPS data exchange format and most vizualization and editing tools support it. For example, you can use `gpsprune` to load, vizualize on a map and edit the recorded files. You can use `GPX-Animator` to create videos of your recorded drive. 
+
+
+[![animation](../images/gc2.png)](../images/gc2.mp4)
