@@ -317,12 +317,6 @@ The ones with `proc` prefix are started by init scripts and have fairly obvious 
 
 These are very sensitive, and messing with any of them during runtime quickly causes a reboot. 
 
-### Airbiquity 
-
-In order to provide smartphone integration and internet connectivity, Bosch seems to have partnered with Airbiquity. Airbiquity's application endpoint can be found in `/opt/bosch/airbiquity` and it constist of a NodeJS application that facilitates all the fancy features like Apps, smart phone integration , internet connectivity and inter-process communication with the rest of lcn2kai system. It would do one good to piece together how it all works...
-
-Notice that `Apps` menu on the head unit that lists Google, Yelp , Pandora or whatever as apps? That's actually rendering a web page from Airbiquity's middleware. More on that in a separate document.
-
 
 ### Trace framework
 
@@ -340,7 +334,12 @@ Trace backend can also log textual debug info whose verbosity can be controlled 
 
 ## Airbiquity middleware
 
-As previously mentioned, to enable smartphone integration and internet connectivity, lcn2kai uses a version of Airbiquity's middleware. Here we'll quickly describe how it works. 
+
+In order to provide smartphone integration and internet connectivity, Bosch seems to have partnered with Airbiquity. Airbiquity's application endpoint can be found in `/opt/bosch/airbiquity` and it constist of a NodeJS application that facilitates all the fancy features like Apps, smart phone integration , internet connectivity and inter-process communication with the rest of lcn2kai system. It would do one good to piece together how it all works...
+
+Notice that `Apps` menu on the head unit that lists Google, Yelp , Pandora or whatever as apps? That's actually rendering a web page from Airbiquity's middleware. 
+
+![app menu](../images/03_apps_menu.bmp)
 
 On the lcn2kai side, middleware is written in NodeJS and is started on startup via `/bin/node` script. The actuall application is located in `/opt/bosch/Airbiquity/hup`. HUP stans for "Head Unit P?". As is usual with node apps, it's minified , but it's still easy to follow what's going on. It does the following:
  - Starts a HTTP server that serves contents of `/var/opt/bosch/dynamic/airbiquity`
