@@ -147,7 +147,7 @@ fi
 
 If there were no errors in this process, lcn2kai should detect the flash drive on startup, and `/bin/node` script will execute `gpshup.js` instead of original one. If you go to `Apps` menu on the head unit, you should see the default app list deplaced with blank screen with HUP messages in blue (not my coordinates, probably a salvage yard that sold this unit on ebay):
 
-![gpshup](images/04_gpshup_app.bmp)
+![gpshup](../images/04_gpshup_app.bmp)
 
 
 Now it's time to drive around and  log some GPS data. 
