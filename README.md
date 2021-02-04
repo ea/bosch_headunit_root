@@ -124,6 +124,11 @@ Several groups of components can be distinguished on the board. There's an STMic
 
 There are no useful labels on either side of the board, but those two unpopulated header footprints are likely a good place to start hunting for UART. With an oscilloscope, this is a simple matter of touching the pads with the probe and power cycling the device until we find something that looks like data. With some trial and error, this will quickly identify serial console TX pin (orange in the photo). Figuring out the RX pin is less obvious, but what you can do is connect a USB/Serial adapter and write a script that just spews out characters to it's TX pin. On the other side, once the device is booted up and TX pin looks quiet, you just keep the oscilloscope probe on it. Now, if you are lucky, echo will be on on the console, so once you hit the correct RX pin, data will again begin showing up on TX. Again, with some trial and error (and persistence) one can identify RX as well (blue wire in the photo). Next step is to guess the baud rate, which is just a matter of trying out several standard values (remember to first ground your USB serial adapter to proper device ground).
 
+Update: Turns out TX and RX pins are actually connected to the car harness port, maked on the following image:
+![tx_rx](images/10_serial_pins.png)
+
+This would make them much easier to access. No need to open the case. From the outside, the TX/RX pins seem to be intentionally clipped so they wouldn't connect to the regular cable harness, but a test clip should do the job. 
+
 Lcn2kai's console uses `115200` baud, connecting to it and booting up the unit greets us with the following boot log:
 
 ```
@@ -177,6 +182,8 @@ Uncompressing Linux... done, booting the kernel.
 Alright, we are getting somewhere. We can spot a bunch of useful information from this. First, as expected, U-Boot is being used to boot up the system. NEC Nemid seems to be the name of the base platform. CPU is MPCore at 400MHz, notably dual core. When it comes to booting the OS, it's very interesting to find out that apparently an RTOS is booted up first, followed by Linux. Image name for RTOS is `triton_min_dualos` and some quick lookups would reveal it to be based on T-Kernel or Tron which is a real time operating system popular with Japanese manufacturers. 
 
 This arrangement sort of makes sense, an RTOS to handle timing-sensitive stuff like CANbus data , and a regular OS (Linux) to handle UI, networking , multimedia...
+
+
 
 ### Root via UBoot and SSH
 
