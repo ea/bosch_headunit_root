@@ -273,9 +273,15 @@ Also of use in debugging and testing stuff is U-boot environment and available c
 [   42.599245] version - print monitor version
 ```
 
+For further reverse engineering , it's usefull to know a precise load address for u-boot. U-boot should be loaded at address `0x8ff00000`.
+
 ## DualOS 
 
 All around the system, there are references to `DualOS`. This reffers to the fact that system runs two operating systems at once. Linux which is mainly responsible for user interaction, and a separate RTOS that's probably tasked with dealing with CANbus and other time sensitive operations.
+
+From U-boot output above, two commands jump out as potentially useful in experimenting with two OSs. There is `startguestos` command which will simply boot up Linux only. And then there's `startsingleRTOS` command which would presumeably boot the RTOS only, but it complains with `start of RTOS only available in single os environment !!!`. A little bit of reverse engineering with Ghidra reveals that `startsingleRTOS` command first checks for existance of  `dualosoff` environment variable and only boots up if `dualosoff` is set to false. 
+
+At boot, Triton binary appears to be loaded at `0x80000000`. 
 
 ### Linux
 
