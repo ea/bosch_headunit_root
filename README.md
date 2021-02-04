@@ -40,7 +40,9 @@ Put simply, if your headunit looks similar to the photo above, chances are that 
 
 So far, I've only tested this on my 2015 Nissan Xterra. 
 
-Internally (and partially externally) Bosch and Nissan seem to reffer to this head unit version as lcn2kai which is how I'll be addressing it in these docs. If anybody happens to know what it stands for, I'd like to know.
+Internally (and partially externally) Bosch and Nissan seem to reffer to this head unit version as lcn2kai which is how I'll be addressing it in these docs. If anybody happens to know what it stands for, I'd like to know. 
+
+We keep a (hopefully growing) list of confirmed cars and fw/hw versions in [here](docs/confirmed_working.md)
 
 ## Attack surface
 
