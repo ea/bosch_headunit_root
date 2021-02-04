@@ -2,10 +2,18 @@
 
 In this document, I'll gather all the information about lcn2kai system that could be useful in further exploration. 
 
+- [Base platform](#base-platform)
 - [U-boot log](#u-boot-log)
 - [DualOS](#dualos)
 - [System and processes](#system-and-processes)
 - [Airbiquity middleware](#airbiquity-middleware)
+
+
+# Base platform
+
+As can be gleaned from U-Boot output, the main system design seems to have been done by NEC as the board is reffered to as NEMid. Some Internet archeology reveals references to NEC's [NaviEngine 1](https://elinux.org/NaviEngine) and variations called NaviEngine-mid and NaviEngine-mini. A lot of things from [NEC's documentation](https://www.nec.com/en/global/techrep/journal/g07/n04/pdf/070409.pdf) actually match what can be found on the lcn2kai board. Most notably, the PoverVR SGX 535 graphics accelerator. This is confirmed by the presence of PoverVR devices in dev as well as initialization scripts in `/etc/init.d`. That solves the mystery of NEmid name.  
+
+Though the original firmware contains some GLES and video decoding demo applications, the system doesn't expose a regular framebuffer device. Further work is needed to figure out how to control the display directly.
 
 # U-Boot log
 
