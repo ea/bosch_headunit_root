@@ -10,6 +10,12 @@
   - FW D302 HW: 031
 - 2014 Nissan Pulsar (C13)
   - FW: D554 HW: 031
+  - FW: D605 HW: 031
+
+# Confirmed not working
+
+- 2011 Nissan Qashqai (J10)
+  - DEV: LCN1 FW: E604 HW: 032
 
 
 # List of network adapters confirmed working
