@@ -22,15 +22,12 @@
 void hexdump(char *p, int size){
 for ( int i = 0; i< size; i++ )
 {
-if((i % 16)==0) printf("\n");
-
-   printf("%02x", p[i]);
-}
-
+	if((i % 16)==0) printf("\n");
+		printf("%02x", p[i]);
+	}
 }
 
 void printstrings(char *p, int size){
-
 	int total_printed = 0;
 	int printed = 0;
 	while(total_printed < size){
@@ -40,71 +37,54 @@ void printstrings(char *p, int size){
 	}
 }
 
-main(int argc, char **argv){
+int main(int argc, char **argv){
 
-
-   void *handle;
-   char buff[100];
-   unsigned short int readbuff[2000];
-   memset(readbuff,'\x00',2000);
-    int (*OSAL_IOOpen)(const char*,int param);
-
-    void (*OSAL_s32IOClose)(int fp);
-    void (*OSAL_s32IORead)(int fp,char *buff,int code);
-    handle = dlopen("/opt/bosch/processes/libosal_linux_so.so", RTLD_LAZY);
-        if (!handle) {
-        fprintf(stderr, "Error: %s\n", dlerror());
-        return EXIT_FAILURE;
-    }
-    *(void**)(&OSAL_IOOpen) = dlsym(handle, "OSAL_IOOpen");
-    *(void**)(&OSAL_s32IOClose) = dlsym(handle, "OSAL_s32IOClose");
-    *(void**)(&OSAL_s32IORead) = dlsym(handle, "OSAL_s32IORead");
-
-    if (!OSAL_IOOpen) {
-        fprintf(stderr, "Error: %s\n", dlerror());
-        dlclose(handle);
-        return EXIT_FAILURE;
-    }
-    if (!OSAL_s32IOClose) {
-        fprintf(stderr, "Error: %s\n", dlerror());
-        dlclose(handle);
-        return EXIT_FAILURE;
-    }
-
-    if (!OSAL_s32IORead) {
-        fprintf(stderr, "Error: %s\n", dlerror());
-        dlclose(handle);
-        return EXIT_FAILURE;
-    }
-
-    int fp = OSAL_IOOpen(argv[3],4);
-    if(fp == 0xffffffff) {
-    	printf("No such device: %s\n",argv[3]);
-    	exit(0);
-    }
-    //bReadEntry(this,0xdfe,0x18,(uchar *)(this + 5));
-    for(unsigned short int i = 0 ; i < 0xffff; i++){
-    unsigned short int word1 = (unsigned short int)strtol(argv[1],0,16);
-    unsigned short int word2 = (unsigned short int)strtol(argv[2],0,16);
-    readbuff[0] = word1+i;
-    readbuff[1] = word2;
-
-
-
-    OSAL_s32IORead(fp,&readbuff,0xf6);
-    int empty = 1;
-    for(int j = 8; j < word2;j++){
-    	if(readbuff[j] != '\x00') {empty = 0; break;}
-
-    }
-    if(empty)continue;
-    if((unsigned short int)*readbuff == 0xffff)continue;
-    printf("0x%x:\n",word1+i);
-    hexdump(readbuff,word2);
-    printstrings(readbuff,word2);
-       memset(readbuff,'\x00',2000);
-
+	void *handle;
+	char readbuff[2000];
+	int (*OSAL_IOOpen)(const char*,int param);
+	void (*OSAL_s32IOClose)(int fp);
+	void (*OSAL_s32IORead)(int fp,char *buff,int code);
+	handle = dlopen("/opt/bosch/processes/libosal_linux_so.so", RTLD_LAZY);
+	if (!handle) {
+		fprintf(stderr, "Error: %s\n", dlerror());
+		return EXIT_FAILURE;
 	}
-    OSAL_s32IOClose(fp);
-        gets(buff);
+	*(void**)(&OSAL_IOOpen) = dlsym(handle, "OSAL_IOOpen");
+	*(void**)(&OSAL_s32IOClose) = dlsym(handle, "OSAL_s32IOClose");
+	*(void**)(&OSAL_s32IORead) = dlsym(handle, "OSAL_s32IORead");
+
+	if (!OSAL_IOOpen || !OSAL_s32IOClose || !OSAL_s32IORead) {
+		fprintf(stderr, "Error: %s\n", dlerror());
+		dlclose(handle);
+		return EXIT_FAILURE;
+	}
+
+	int fp = OSAL_IOOpen(argv[3],4);
+	if (fp == 0xffffffff) {
+	    printf("No such device: %s\n",argv[3]);
+		dlclose(handle);
+		exit(0);
+	}
+	//bReadEntry(this,0xdfe,0x18,(uchar *)(this + 5));
+	unsigned short int word1 = (unsigned short int)strtol(argv[1],0,16);
+	unsigned short int word2 = (unsigned short int)strtol(argv[2],0,16);
+	for (; word1 < 0xffff; word1++){
+		memset(readbuff,'\x00',sizeof(readbuff));
+		((unsigned short int*)readbuff)[0] = word1;
+		((unsigned short int*)readbuff)[1] = word2;
+
+		OSAL_s32IORead(fp,readbuff,0xf6);
+		if (((unsigned short int*)readbuff)[0] == 0xffff) continue;
+		int empty = 1;
+		for (int j = 8; j < word2; j++){
+			if(readbuff[j] != '\x00') {empty = 0; break;}
+		}
+		if (empty) continue;
+
+		printf("0x%x:\n",word1);
+		hexdump(readbuff,word2);
+		printstrings(readbuff,word2);
+	}
+	OSAL_s32IOClose(fp);
+	dlclose(handle);
 }
