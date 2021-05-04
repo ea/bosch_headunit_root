@@ -19,28 +19,38 @@
 // ./rtos_iosc_testing 0xdfe 0x18 /dev/kds 
 // tends to lead to a crash which can also bring down the whole OS, probably not cleaning up something
 
-void hexdump(char *p, int size){
-for ( int i = 0; i< size; i++ )
-{
-	if((i % 16)==0) printf("\n");
+void hexdump(char *p, int size) {
+	for (int i = 0; i < size; i++) {
+		if(i && !(i % 16)) printf("\n");
 		printf("%02x", p[i]);
 	}
+	printf("\n");
 }
 
-void printstrings(char *p, int size){
-	int total_printed = 0;
-	int printed = 0;
-	while(total_printed < size){
-		printed = printf("%s",p+total_printed);
-		if(printed == 0){printed = 1;}else{printf("\n");}
-		total_printed += printed;
+void printstrings(char *p, int size) {
+	for (int i = 0; i < size; i++) {
+		if(i && !(i % 16)) printf("\n");
+		if (p[i] >= 0x21 && p[i] <= 0x7e) {
+			printf("%c", p[i]);
+		} else {
+			printf(".");
+		}
 	}
+	printf("\n");
 }
 
 int main(int argc, char **argv){
 
 	void *handle;
-	char readbuff[2000];
+	union {
+		char rawdata[1024];
+		struct {
+			unsigned short code;
+			unsigned short len;
+			unsigned short unknown;
+			char data[1012];
+		} ioread;
+	} buffer;
 	int (*OSAL_IOOpen)(const char*,int param);
 	void (*OSAL_s32IOClose)(int fp);
 	void (*OSAL_s32IORead)(int fp,char *buff,int code);
@@ -66,24 +76,19 @@ int main(int argc, char **argv){
 		exit(0);
 	}
 	//bReadEntry(this,0xdfe,0x18,(uchar *)(this + 5));
-	unsigned short int word1 = (unsigned short int)strtol(argv[1],0,16);
-	unsigned short int word2 = (unsigned short int)strtol(argv[2],0,16);
+	unsigned short word1 = (unsigned short)strtol(argv[1],0,16);
+	unsigned short word2 = (unsigned short)strtol(argv[2],0,16);
 	for (; word1 < 0xffff; word1++){
-		memset(readbuff,'\x00',sizeof(readbuff));
-		((unsigned short int*)readbuff)[0] = word1;
-		((unsigned short int*)readbuff)[1] = word2;
+		memset(buffer.rawdata, 0, sizeof(buffer));
+		buffer.ioread.code = word1;
+		buffer.ioread.len = word2;
 
-		OSAL_s32IORead(fp,readbuff,0xf6);
-		if (((unsigned short int*)readbuff)[0] == 0xffff) continue;
-		int empty = 1;
-		for (int j = 8; j < word2; j++){
-			if(readbuff[j] != '\x00') {empty = 0; break;}
-		}
-		if (empty) continue;
+		OSAL_s32IORead(fp, buffer.rawdata, 0xf6);
+		if (buffer.ioread.code == 0xffff) continue;
 
-		printf("0x%x:\n",word1);
-		hexdump(readbuff,word2);
-		printstrings(readbuff,word2);
+		printf("\n%04x %04x %04x:\n", buffer.ioread.code, buffer.ioread.len, buffer.ioread.unknown);
+		hexdump(buffer.ioread.data, buffer.ioread.len);
+		printstrings(buffer.ioread.data, buffer.ioread.len);
 	}
 	OSAL_s32IOClose(fp);
 	dlclose(handle);
