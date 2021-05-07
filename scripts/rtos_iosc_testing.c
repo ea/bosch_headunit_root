@@ -24,7 +24,6 @@ void dump(char *p, int size) {
 	for (int i = 0; i < size; i+=16) {
 		if(i && !(i % 16)) printf("\n");
 		for (int j = 0; j < 16; j++) {
-			if (j == 8) printf(" ");
 			if (i + j >= size) {
 				for (int k = j; k < 16; k++) {
 					if (k == 8) printf(" ");
@@ -32,6 +31,7 @@ void dump(char *p, int size) {
 				}
 				break;
 			}
+			if (j == 8) printf(" ");
 			printf("%02x", p[i+j]);
 		}
 		printf("  ");
@@ -89,7 +89,7 @@ int main(int argc, char **argv){
 		dlclose(handle);
 		return EXIT_FAILURE;
 	}
-	//bReadEntry(this,0xdfe,0x18,(uchar *)(this + 5));
+
 	unsigned short word1 = (unsigned short)strtol(argv[1],0,16);
 	unsigned short word2 = (unsigned short)strtol(argv[2],0,16);
 	for (; word1 < 0xffff; word1++){
