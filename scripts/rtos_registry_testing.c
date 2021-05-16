@@ -139,13 +139,8 @@ main(int argc, char **argv){
     readbuff[2] = 0;
     readbuff[3] = &b1;
      b = OSAL_s32IOControl(fp,1,&readbuff);
-    printf("%d %d %d %d\n",b,readbuff[2],b1[0],b1[1]);
-
-    b = OSAL_s32MessagePoolCreate(300000);
-    printf("OSAL_s32MessagePoolCreate %d\n",b);
-
-    OSAL_s32MessagePoolOpen();// should be 0 
-    printf("pool current size: %d \n",OSAL_s32MessagePoolGetCurrentSize());
+    printf("key read retval %d %d %d %d\n",b,readbuff[2],b1[0],b1[1]);
+    printf("value: %s", b1); // some key values are actually strings
 
     gets(buff);    
 
