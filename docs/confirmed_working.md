@@ -8,6 +8,8 @@
   - FW D407 HW: 031
 - 2015 Nissan Qashqai
   - FW D302 HW: 031
+- 2015 Nissan Qashqai
+  - FW D300 HW: 033
 - 2014 Nissan Pulsar (C13)
   - FW: D554 HW: 031
   - FW: D605 HW: 031
