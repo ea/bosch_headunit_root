@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dlfcn.h>
-
+#include "util.h"
+#include "dynload.h"
 
 // this test program demonstrates how to use functions from OSAL to
 // for Intra-OS communication
@@ -20,36 +21,9 @@
 // ./rtos_iosc_testing 0xdfe 0x18 /dev/kds 
 // tends to lead to a crash which can also bring down the whole OS, probably not cleaning up something
 
-void dump(char *p, int size) {
-	for (int i = 0; i < size; i+=16) {
-		if(i && !(i % 16)) printf("\n");
-		for (int j = 0; j < 16; j++) {
-			if (i + j >= size) {
-				for (int k = j; k < 16; k++) {
-					if (k == 8) printf(" ");
-					printf("  ");
-				}
-				break;
-			}
-			if (j == 8) printf(" ");
-			printf("%02x", p[i+j]);
-		}
-		printf("  ");
-		for (int j = 0; j < 16; j++) {
-			if (i+j >= size) break;
-			if (p[i+j] >= 0x21 && p[i+j] <= 0x7e) {
-				printf("%c", p[i+j]);
-			} else {
-				printf(".");
-			}
-		}
-	}
-	printf("\n");
-}
 
 int main(int argc, char **argv){
 
-	void *handle;
 	union {
 		char rawdata[1024];
 		struct {
@@ -65,28 +39,12 @@ int main(int argc, char **argv){
 		return EXIT_FAILURE;
 	}
 
-	int (*OSAL_IOOpen)(const char*,int param);
-	void (*OSAL_s32IOClose)(int fp);
-	void (*OSAL_s32IORead)(int fp,char *buff,int code);
-	handle = dlopen("/opt/bosch/processes/libosal_linux_so.so", RTLD_LAZY);
-	if (!handle) {
-		fprintf(stderr, "Error: %s\n", dlerror());
-		return EXIT_FAILURE;
-	}
-	*(void**)(&OSAL_IOOpen) = dlsym(handle, "OSAL_IOOpen");
-	*(void**)(&OSAL_s32IOClose) = dlsym(handle, "OSAL_s32IOClose");
-	*(void**)(&OSAL_s32IORead) = dlsym(handle, "OSAL_s32IORead");
+    if(dynload() != 0) return 1;
 
-	if (!OSAL_IOOpen || !OSAL_s32IOClose || !OSAL_s32IORead) {
-		fprintf(stderr, "Error: %s\n", dlerror());
-		dlclose(handle);
-		return EXIT_FAILURE;
-	}
 
 	int fp = OSAL_IOOpen(argv[3],4);
 	if (fp == 0xffffffff) {
 	    printf("No such device: %s\n",argv[3]);
-		dlclose(handle);
 		return EXIT_FAILURE;
 	}
 
@@ -106,6 +64,6 @@ int main(int argc, char **argv){
 		if (argc < 5) break;
 	}
 	OSAL_s32IOClose(fp);
-	dlclose(handle);
+	cleanup();
 	return EXIT_SUCCESS;
 }
