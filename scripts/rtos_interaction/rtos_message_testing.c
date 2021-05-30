@@ -52,14 +52,14 @@ int main(int argc, char **argv){
     int y[10] = {0};
     int z[10] = {0};
     while(1==1){
+    memset(x,0,sizeof(x));
+    memset(z,0,sizeof(z));
+    memset(y,0,sizeof(y));
     result = OSAL_s32MessageQueueWait(queueid,(int**)&x,8,(int**)&y,(int**)&z);
-    printf("x %x %x %x %x\n",result, x[0] , x[1],x[2]);
+
     unsigned int *msg_handle = (unsigned int*)x[1];
-    
     MessageStruct *message = OSAL_pu8MessageContentGet((unsigned int*)x[0],msg_handle,4);
 
-
-    printf("content x %x %x %x %x\n",result, x[0] , x[1],x[2]);
     printf("unk1:%04x queue#:%04x, bytes:%08x unk2:%04x unk3:%02x msgType:%02x unk4:%04x qSubId:%04x time:%08x\n"
         ,message->unknown1
         ,message->queueNum
@@ -70,7 +70,11 @@ int main(int argc, char **argv){
         ,message->unknownWord4
         ,message->queueSubId
         ,message->time);
-    dump((char*)(message+sizeof(struct messageStruct)),message->numBytes-sizeof(struct messageStruct));    printf("\n\n");
+    char *p = pu32GetSharedBaseAdress();
+    p = p+ (int)msg_handle * 0xc;
+
+    // it seems like all valid messages should start with 0xdaca
+    dump((char*)(p),message->numBytes-sizeof(struct messageStruct));    printf("\n\n");
 
 }
 
