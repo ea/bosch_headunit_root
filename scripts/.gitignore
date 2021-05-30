@@ -1,2 +1,6 @@
 *.ext2
+*.o
+rtos_device_testing
+rtos_message_testing
+rtos_registry_testing
 
