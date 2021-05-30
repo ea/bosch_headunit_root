@@ -10,7 +10,7 @@
 void *handle;
 int (*OSAL_IOOpen)(const char*,int param);
 void (*OSAL_s32IOClose)(int fp);
-void (*OSAL_s32IORead)(int fp,char *buff,int code);
+int (*OSAL_s32IORead)(int fp,char *buff,int code);
 int (*OSAL_s32IOControl)(int fp,unsigned int f,char *buff);
 int (*OSAL_s32MessagePoolCreate)(ulong size);
 int (*OSAL_s32MessagePoolOpen)();
