@@ -13,6 +13,9 @@ $(bins) : %: %.c ${OBJ}
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
+deploy:
+	scp $(bins) root@172.17.0.1:/tmp/
 
 clean:
 	rm rtos_message_testing rtos_registry_testing rtos_iosc_testing *.o
+

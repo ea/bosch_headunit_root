@@ -67,6 +67,9 @@ return 0;
 void cleanup(){
     //add whatever else cleanup is neccessary
 
+    puts("\npress any key to continue\n");
+    getchar();    
+
     dlclose(handle);
 
 }

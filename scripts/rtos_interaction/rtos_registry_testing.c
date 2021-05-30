@@ -73,7 +73,6 @@ int main(int argc, char **argv){
     printf("value read retval %d %d %d %ld\n",b,readbuff[2],b2[0],b1[1]);
     printf("data: %s", b2); // some key values are actually strings
 
-    getchar();    
 
     OSAL_s32IOClose(fp);
 
