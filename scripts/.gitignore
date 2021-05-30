@@ -3,4 +3,5 @@
 rtos_device_testing
 rtos_message_testing
 rtos_registry_testing
-
+*.so
+trace_hooking_demo

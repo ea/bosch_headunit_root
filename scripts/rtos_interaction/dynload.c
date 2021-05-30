@@ -5,7 +5,7 @@
 #define _GNU_SOURCE
 #include <dlfcn.h>
 #include "dynload.h"
-
+#include <unistd.h>
 
 int dynload(){
 
@@ -66,6 +66,9 @@ return 0;
 
 void cleanup(){
     //add whatever else cleanup is neccessary
+
+    _exit(0); //till i figure why it crashes in osal destructors...
+
 
     puts("\npress any key to continue\n");
     getchar();    
