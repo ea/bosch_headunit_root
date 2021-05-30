@@ -74,7 +74,7 @@ int main(int argc, char **argv){
     p = p+ (int)msg_handle * 0xc;
 
     // it seems like all valid messages should start with 0xdaca
-    dump((char*)(p),message->numBytes-sizeof(struct messageStruct));    printf("\n\n");
+    dump((char*)(p),message->numBytes);    printf("\n\n");
 
 }
 
