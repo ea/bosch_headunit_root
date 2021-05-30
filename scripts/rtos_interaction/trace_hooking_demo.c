@@ -5,36 +5,6 @@
 #include "dynload.h"
 #include "util.h"
 
-static void TraceString(char *s){
-        printf("TRACE: %s\n",s);
-
-
-}
-static int bFilterMsg(int *p){return 1;}
-
-static int vPrintMessage(int fd, char*s){
-	printf("TRACE: %s\n",s);
-}
-
-static int TraceIOString(char *s){
-	printf("TRACE %s\n",s);
-}
-
-static int LLD_vTrace(int x, int y, char *s, char *z){
-
-	printf("LLD_vTrace: %s\n",s);
-}
-
-static int OSALUTIL_s32TraceWrite(int x , int y, int z, char *s, int j){
-	printf("OSALUTIL_s32TraceWrite: %s\n",s);
-}
-
-static int vWriteToErrMem(int x ,char *s,int y, char *z){
-		printf("vWriteToErrMem: %s\n",s);
-
-}
-
-
 int main(int argc, char **argv){
 
 	if(argc != 2){

@@ -3,7 +3,7 @@ CFLAGS= --sysroot=${SYSROOT} -B ${SYSROOT}
 LDLIBS = -ldl
 DEPS = dynload.h osal_types.h util.h
 OBJ = util.o dynload.o
-bins = rtos_message_testing  rtos_registry_testing rtos_device_testing trace_hooking_demo 
+bins = osal_dir_read rtos_message_testing  rtos_registry_testing rtos_device_testing trace_hooking_demo 
 
 
 

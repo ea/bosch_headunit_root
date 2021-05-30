@@ -21,7 +21,7 @@ MessageStruct * (*OSAL_pu8MessageContentGet)(unsigned int *p1,unsigned int *p2,u
 int (*OSAL_s32MessageQueueOpen)(char *queuename,int x, int *unknown);
 int (*OSAL_s32MessageQueueStatus)(int queueid,int *x, int *y);
 int (*OSALUTIL_prOpenDir)(const char*);
-int (*OSALUTIL_prReadDir)(int *);
+char* (*OSALUTIL_prReadDir)(int );
 int (*OSAL_s32MessageQueueWait)(int queueid,int **x, int i,int **y,int **z);
 int (*s32ReadCompleteMsg)(int msg,int x);
 int (*u32GetActualMsg)(int msg);
