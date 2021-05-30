@@ -70,14 +70,31 @@ int main(int argc, char **argv){
         ,message->unknownWord4
         ,message->queueSubId
         ,message->time);
-    char *p = pu32GetSharedBaseAdress();
-    p = p+ (int)msg_handle * 0xc;
+    MessageDataStruct *p = pu32GetSharedBaseAdress();
+    p = (MessageDataStruct*)((char*)p+ (int)msg_handle * 0xc);
 
     // it seems like all valid messages should start with 0xdaca
-    dump((char*)(p),message->numBytes);    printf("\n\n");
+    //dump((char*)(p),message->numBytes);    printf("\n\n");
 
+    printf("mgk:0x%04x unk2: 0x%04x #blk:%d sndr:%d rcvr: %d sz:%d unk3:0x%02x unk4:0x%01x typ:%d s_sub:0x%02x, d_sub:0x%02x, time:%d serv_id:%d, unk5:0x%02x, fn:%d op:%d\n"
+             ,p->magic
+             ,p->unknown2
+             ,p->blocks
+             ,p->sender
+             ,p->receiver
+             ,p->size
+             ,p->unknown3
+             ,p->unknown4
+             ,p->type
+             ,p->s_sub
+             ,p->d_sub
+             ,p->time
+             ,p->serv_id
+             ,p->unknown5
+             ,p->func_id
+             ,p->opcode);
+    dump((char*)(p),p->blocks*12);
 }
-
 
     cleanup();
     return 0;

@@ -13,6 +13,28 @@ typedef struct messageStruct {
     int time;
 } MessageStruct ;
 
+
+typedef struct messageDataStruct {
+	uint32_t magic;
+	uint32_t unknown2;
+    uint32_t blocks;
+    uint16_t sender;
+    uint16_t receiver;
+    uint32_t size;
+    uint16_t unknown3;
+    uint8_t unknown4;
+    uint8_t type;
+    uint16_t s_sub;
+    uint16_t d_sub;
+    uint32_t time;
+    uint16_t serv_id;
+	uint16_t unknown5;
+    uint16_t func_id;
+    uint8_t opcode;
+} MessageDataStruct;
+
+
+
 // code: 0x0d60, len: 0x04
 struct ECORoute {
 	uint8_t  FuelType : 1;          // byte 0

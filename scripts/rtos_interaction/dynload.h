@@ -30,6 +30,7 @@ void * (*pu32GetSharedBaseAdress)();
 void * (*vDebugFacility)();
 int *pOsalData;
 void * (*vPrintSharedMemoryTable)();
+void (*vPrintMsgInfo)(char *,uint8_t flag);
 
 int dynload();
 void cleanup();

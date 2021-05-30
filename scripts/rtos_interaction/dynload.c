@@ -36,6 +36,7 @@ handle = (struct link_map*)  dlopen("/opt/bosch/processes/libosal_linux_so.so", 
 *(void**)(&pu32GetSharedBaseAdress) = dlsym(handle,"pu32GetSharedBaseAdress");
 *(void**)(&vDebugFacility) = dlsym(handle,"vDebugFacility");
 *(void**)(&vPrintSharedMemoryTable) = dlsym(handle,"vPrintSharedMemoryTable");
+*(void**)(&vPrintMsgInfo) = dlsym(handle,"vPrintMsgInfo");
 
 pOsalData = dlsym(handle,"pOsalData");
 
