@@ -1,5 +1,5 @@
 #include <stdio.h>
-
+#include "util.h"
 void TraceString(char *s){
         printf("TRACE: %s\n",s);
 }
@@ -14,9 +14,9 @@ int TraceIOString(char *s){
 	printf("TRACE %s\n",s);
 }
 
-int LLD_vTrace(int x, int y, char *s, char *z){
+int LLD_vTrace(int x, int y, char *s, int z){
 
-	printf("LLD_vTrace: %s\n",s);
+	printf("LLD_vTrace: %s\n",s+13);
 }
 
 int OSALUTIL_s32TraceWrite(int x , int y, int z, char *s, int j){

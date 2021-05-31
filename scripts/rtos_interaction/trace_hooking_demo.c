@@ -5,9 +5,14 @@
 #include "dynload.h"
 #include "util.h"
 
+// ex: get all message queues
+//LD_PRELOAD=./inject.so ./trace_hooking_demo 4 `echo -e "AA\x1f"` 
+//help
+//LD_PRELOAD=./inject.so ./trace_hooking_demo 4 `echo -e "AA\xf0"` #for help
+//LD_PRELOAD=./inject.so ./trace_hooking_demo 4 `echo -e "AA\x12\x12"`#trace open files
 int main(int argc, char **argv){
 
-	if(argc != 2){
+	if(argc < 2){
     printf("Usage example: LD_PRELOAD=./inject.so ./trace_hooking_demo 1|2|3|...\n");
     	return 1;
 	}	
@@ -30,6 +35,9 @@ int main(int argc, char **argv){
     			break;
 		case 3:
     			vOsalTraceOutRegistry("/dev/registry");
+    			break;
+    	case 4:
+    			vSysCallbackHandler(argv[2]);
     			break;
     }
 

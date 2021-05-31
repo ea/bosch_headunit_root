@@ -31,6 +31,7 @@ void * (*vDebugFacility)();
 int *pOsalData;
 void * (*vPrintSharedMemoryTable)();
 void (*vPrintMsgInfo)(char *,uint8_t flag);
+void (*vSysCallbackHandler)();
 
 int dynload();
 void cleanup();

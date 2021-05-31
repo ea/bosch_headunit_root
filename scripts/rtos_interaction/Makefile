@@ -10,7 +10,7 @@ bins = osal_dir_read  osal_device_read rtos_message_testing  rtos_registry_testi
 all: $(bins) inject.so
 
 inject.so : inject.c
-	$(CC) $(CFLAGS) -o $@ $^ -shared -fPIC
+	$(CC) $(CFLAGS) -o $@ $^ util.o -shared -fPIC
 
 $(bins) : %: %.c ${OBJ}
 	$(CC) $(CFLAGS) -o $@  $^ $(LDLIBS)
