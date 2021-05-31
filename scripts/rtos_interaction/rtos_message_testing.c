@@ -46,6 +46,8 @@ int main(int argc, char **argv){
     int unk[2]= {0,0};
     int result = OSAL_s32MessageQueueOpen(argv[1],4,unk);
     printf("Queue id %d %d %d\n",result,unk[0],unk[1]);
+    fflush(0);
+
     int queueid = unk[0];
 
     int x[10] = {0};
@@ -55,11 +57,11 @@ int main(int argc, char **argv){
     memset(x,0,sizeof(x));
     memset(z,0,sizeof(z));
     memset(y,0,sizeof(y));
-    result = OSAL_s32MessageQueueWait(queueid,(int**)&x,8,(int**)&y,(int**)&z);
+    while(OSAL_s32MessageQueueWait(queueid,(int**)&x,8,0,1000)<1);
 
     unsigned int *msg_handle = (unsigned int*)x[1];
     MessageStruct *message = OSAL_pu8MessageContentGet((unsigned int*)x[0],msg_handle,4);
-
+    if(!message) continue;
     printf("unk1:%04x queue#:%04x, bytes:%08x unk2:%04x unk3:%02x msgType:%02x unk4:%04x qSubId:%04x time:%08x\n"
         ,message->unknown1
         ,message->queueNum
@@ -94,6 +96,7 @@ int main(int argc, char **argv){
              ,p->func_id
              ,p->opcode);
     dump((char*)(p),p->blocks*12);
+    fflush(0);
 }
 
     cleanup();
