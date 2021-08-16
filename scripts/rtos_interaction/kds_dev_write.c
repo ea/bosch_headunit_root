@@ -22,8 +22,10 @@ int main(int argc, char **argv){
 		} ioread;
 	} buffer;
 
-	if (argc < 4) {
-		printf("usage: %s <dev> <code> <data>\n", argv[0]);
+	if (argc < 5 ) {
+		printf("usage: %s <dev> <code> <data> CONFIRM\n", argv[0]);
+		printf("This can probably mess things up very easily, so make sure you know what's supposed to happen before CONFIRM");
+		printf("Ex: to change BTName: ./kds_dev_write /dev/kds 0xDFE Dusty\n");
 		return EXIT_FAILURE;
 	}
 
