@@ -1,12 +1,28 @@
-Intra-process and Intra-OS Communication 
+# Intra-process and Intra-OS Communication 
 
 As already established, Lcn2kai platform runs in DualOS configuration with an RTOS and Linux.  There are a number of processes running on both sides and they need to communicate over the OS and process boundary. RTOS has the most direct access to the vehicle hardware and therefore all the interesting data from devices and sensors originates from RTOS side. In order to make use of it, various IntraOS and IPC mechanisms needed to be reverse engineered. This document will present the processes that are present on both sides, an overview of the OS abstraction layers , configuration store, message passing queues and other platform mechanisms. 
 
-# RTOS processes
+#### Table Of Contents
+
+- [Running processes](#running-processes)
+  * [RTOS Processes](#rtos-processes)
+  * [RTOS Drivers](#rtos-drivers)
+  * [Linux Processes](#linux-processes)
+- [LibOSAL](#libosal)
+- [Registry](#registry)
+- [Message Queues](#message-queues)
+  * [Application IDs and Service IDs](#application-ids-and-service-ids)
+  * [Functions and opcodes](#functions-and-opcodes)
+  * [Queues](#queues)
+  * [Messages](#messages)
+- [KDS](#kds)
+
+
+## Running processes
 
 RTOS that runs lcn2kai is based on T-kernel/T-engine and is often refered to as triton. Along the kernel itself which gets booted up via u-boot, the RTOS side consists of two sets of processes. One set might be considered "userland" while the other seems more akin to drivers. Both sets of binaries are stored in nor partition in packaged or compressed state. 
 
-## RTOS processes
+### RTOS processes
 
 Under `nor0/processes`, the following binaries can be found:
 ```
@@ -59,9 +75,9 @@ Now that the files are decompressed, it can be confirmed that they are indeed EL
 
  Services and message passing mechanisms will be detailed later, but most important ones are implemented by these processes. When trying to understand the data sent in messages, these are the first place to start looking. 
 
-## RTOS "Drivers" 
+### RTOS Drivers 
 
-Additional components loaded by the RTOS also come in a form of ELFs, but are somehow distinct from the above processes. These reside in `rfd_file.bin` in the firmware. Upon closer inspection, this file turns out to be a flat archive of ELFs with a minimal header describing file offset, lenght and name:
+"Drivers". Additional components loaded by the RTOS also come in a form of ELFs, but are somehow distinct from the above processes. These reside in `rfd_file.bin` in the firmware. Upon closer inspection, this file turns out to be a flat archive of ELFs with a minimal header describing file offset, lenght and name:
 
 ```
 00000000: 0528 0000 3412 0000 1200 0000 7019 0000  .(..4.......p...
@@ -105,7 +121,7 @@ The unpacked file list is as follows:
 I called them drivers because some obviously provide impotant mechanisms to the kernel itself. For example, `sysprogfilesys.uout` provides support for FAT file systems, `*osal` is various OS abstratcion layers which are mirrored on the Linux side, and `sysprogvirtio` provides an interface that facilitates shared virtual memory between two OSes.  I haven't yet spent too much time looking into these, but a couple are of obviously interesting, like `sysprogcan.uout` which provdes CAN bus monitoring. 
 
 
-# Linux Processes
+### Linux Processes
 
 Bosch specific processes on Linux side are readily accessible under `/opt/bosch/processes` and consist of the following:
 
@@ -127,7 +143,7 @@ Bosch specific processes on Linux side are readily accessible under `/opt/bosch/
  Obviouslly, from my notes, I didn't look into all of these. Mostly focused on the base, middleware and HMI processes. All of these binaries are regular ELFs and, most importantly, they have symbols! They all share common C++ frameworks which are much easier to navigate with symbols. These will be detailed when discussing services and message queues. 
 
 
-# LibOSAL
+## LibOSAL
 
 All the processes mentioned so far use one common library, `libosal` which implements an OS abstraction layer. The API is shared on both Linux and RTOS side and is the direct way to access other IOSC and IPC mechanisms. It's fairly easy to undestand and to reuse it, the easiest way being to load it dynamically and re-export required symbols via dlopen/dlsym. Here's a list of most useful exports with guessed function prototypes:
 
@@ -153,7 +169,7 @@ int (*OSAL_s32MessageQueueWait)(int queueid,int **x, int i,int **y,int **z);
 Most important of these are file operations (open,read, write ) and IOControl especially so. Many devices exported by the RTOS are only available through special IOCTLs. Likewise, message queue operations are supported through these outlined APIs. 
 
 
-# Registry
+## Registry
 
 Much to my amusement, it was discovered that configuration for RTOS and Linux processes and their associated services is kept in a data store akin to Windows registry or all things! 
 
@@ -213,12 +229,12 @@ All of registry contents is accessed through `/dev/registry` and all of contents
 I would really like to know the reason behind emulating registry. 
 
 
-# Message queues
+## Message queues
 
 To provide communication between all processes across the OS boundary, special message passing interface is employed. In short, applications that need to be notified of certain events or want to receive certain updates subscribe to services to have messages delivered to them. 
 On the high level, most applications provide services that send updates via messages. It's a bit backwards to the usual message queue or subscriber/publisher setup. Here, an application that wants to receive update messages from a service would create a message queue of it's own and register with the service. Then, the service sends appropriate messages to that queue. To explan this more closely , let's go over applications and services first. 
 
-## Application IDs and Service IDs 
+### Application IDs and Service IDs 
 
 All of the processes on Linux and RTOS side have a one or _MORE_ APP ID associated with them. These seem to be static and can be looked up in the registry:
 ```
@@ -364,7 +380,7 @@ So , from the above we can see that `sensor` APP is implemented in `procmw` , or
 From the above, we can see, for example, that process `PROCMW` (with application ID 10041) has a service called `SENSORS` with service ID 11. Most of the services seem to be related to navigation, or come from telematics. Like, it seems SiriusXM process would offer fule price and weather update service. With subscription required, ofc. I've found sensor, position and car diagnostics services most interesting for now. 
 
 
-## Functions and opcodes
+### Functions and opcodes
 
 Digging into implementations of the above services and receivers of the associated messages, it is apparent that each service offers a different set of messages, or functions. Functions in turn have opcodes associated with them. There apears to be several types of functions and associated opcodes. A function can either simply request information, invoke a method to get a result in return or register for constant updates on events. 
 
@@ -461,7 +477,7 @@ cat services.json | jq '.[]|  select(.u8GetOpCode == 3)  | select(.component == 
 
 Again, the list of services and associated function IDs and opcodes might be wrong in places and is likely incomplete as it was generated by a crude Ghidra script. 
 
-## Queues
+### Queues
 
 We've covered services and functions and mentioned messages. Where are those sent to and from? Next concept to cover is message queues. Each application can have one or more message queues created by itself. Most of these have a name in the form of "mbx_<app_id>". So a queue for SENSOR app would be `mbx_10041` for example. 
 
@@ -520,7 +536,7 @@ mbx_37
 Besides already mentioned `mbx_NNN` queues, I haven't yet explored what exactly is going on in the other ones. 
 
 
-## Messages
+### Messages
 
 So , what are these messages I'm talking about? As mentioned, in order to get data from another service, an application sends a specific message into the queue and then receives a reply into it's own queue. Thing get much cleared with code examples, so here's how the messages look like. First part is the message structure:
 
@@ -731,7 +747,7 @@ Some of the tricky bits here involve figuring out minor and major version of the
 Hope that explains it! The message interaction examples in this repo should be illustrative, but are work in progress or simply proofs of concept. Let me know if something is unclear!
 
 
-# KDS
+## KDS
 
 
 OSAL library provides an interface to talk to certain devices exposed from RTOS. One of them is `/dev/kds`  which serves as some sort of a configuration or state data store. It seems to be backed by a file residing in flash and we can interact with it through libosal.
@@ -1047,7 +1063,7 @@ struct SDSECNR {
 
 
 
-# Trace mechanism
+## Trace mechanism
 
 
 debugging mechanism and hooking
