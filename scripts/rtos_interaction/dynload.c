@@ -18,6 +18,7 @@ handle = (struct link_map*)  dlopen("/opt/bosch/processes/libosal_linux_so.so", 
     *(void**)(&OSAL_IOOpen) = dlsym(handle, "OSAL_IOOpen");
 *(void**)(&OSAL_s32IOClose) = dlsym(handle, "OSAL_s32IOClose");
 *(void**)(&OSAL_s32IORead) = dlsym(handle, "OSAL_s32IORead");
+*(void**)(&OSAL_s32IOWrite) = dlsym(handle, "OSAL_s32IOWrite");
 *(void**)(&OSAL_s32IOControl) = dlsym(handle,"OSAL_s32IOControl");
 *(void**)(&OSAL_s32MessagePoolCreate) = dlsym(handle,"OSAL_s32MessagePoolCreate");
 *(void**)(&OSAL_s32MessagePoolOpen) = dlsym(handle,"OSAL_s32MessagePoolOpen");
@@ -26,7 +27,13 @@ handle = (struct link_map*)  dlopen("/opt/bosch/processes/libosal_linux_so.so", 
 *(void**)(&OSAL_pu8MessageContentGet) = dlsym(handle,"OSAL_pu8MessageContentGet");
 *(void**)(&vOsalTraceOutRegistry) = dlsym(handle,"vOsalTraceOutRegistry");
 *(void**)(&OSAL_s32MessageQueueOpen) = dlsym(handle,"OSAL_s32MessageQueueOpen");
+*(void**)(&OSAL_s32MessageQueueClose) = dlsym(handle,"OSAL_s32MessageQueueClose");
+*(void**)(&OSAL_s32MessageQueueDelete) = dlsym(handle,"OSAL_s32MessageQueueDelete");
+*(void**)(&OSAL_s32MessageQueueCreate) = dlsym(handle,"OSAL_s32MessageQueueCreate");
 *(void**)(&OSAL_s32MessageQueueStatus) = dlsym(handle,"OSAL_s32MessageQueueStatus");
+*(void**)(&OSAL_s32MessageQueuePost) = dlsym(handle,"OSAL_s32MessageQueuePost");
+*(void**)(&OSAL_s32MessageCreate) = dlsym(handle,"OSAL_s32MessageCreate");
+
 *(void**)(&OSALUTIL_prOpenDir) = dlsym(handle, "OSALUTIL_prOpenDir");
 *(void**)(&OSALUTIL_prReadDir) = dlsym(handle, "OSALUTIL_prReadDir");
 *(void**)(&OSAL_s32MessageQueueWait) = dlsym(handle,"OSAL_s32MessageQueueWait");
@@ -38,6 +45,8 @@ handle = (struct link_map*)  dlopen("/opt/bosch/processes/libosal_linux_so.so", 
 *(void**)(&vPrintSharedMemoryTable) = dlsym(handle,"vPrintSharedMemoryTable");
 *(void**)(&vPrintMsgInfo) = dlsym(handle,"vPrintMsgInfo");
 *(void**)(&vSysCallbackHandler) = dlsym(handle,"vSysCallbackHandler");
+*(void**)(&vWriteErrmemToMassstorage) = dlsym(handle,"vWriteErrmemToMassstorage");
+
 
 pOsalData = dlsym(handle,"pOsalData");
 
@@ -57,11 +66,11 @@ if (!OSAL_s32IORead) {
     dlclose(handle);
     return EXIT_FAILURE;
 }
-if(!OSAL_s32IOControl){
+/*if(!OSAL_s32IOControl){
    fprintf(stderr, "Error: %s\n", dlerror());
     dlclose(handle);
     return EXIT_FAILURE;     
-}
+}*/
 return 0;
 
 }
