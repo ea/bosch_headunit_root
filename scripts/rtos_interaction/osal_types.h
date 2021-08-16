@@ -31,6 +31,8 @@ typedef struct messageDataStruct {
 	uint16_t unknown5;
     uint16_t func_id;
     uint8_t opcode;
+    uint32_t x;
+    uint32_t y;
 } MessageDataStruct;
 
 

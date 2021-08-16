@@ -6,20 +6,8 @@
 #include "dynload.h"
 
 // this test program demonstrates how to use functions from OSAL to
-// for Intra-OS communication
-// you can open devices on the RTOS side (/dev/kds for ex.) and read stuff
-// from specified constants
+// read KDS which is some sort of a configuration store 
 
-// TODO: figure out message passing interface and get other more interesting data
-// lcn2kai env doesnt have gcc , obviously, so this has to be cross compiled and then copied over
-// to compile it , you'll need an extracted root fs (or at least the needed binaries) and arm eabi
-// on debian install package gcc-arm-linux-gnueabi
-
-// compile like so:
-// arm-linux-gnueabi-gcc   --sysroot=[PATH_TO_ROOTFS_COPY] -B [PATH_TO_ROOTFS_COPY] rtos_iosc_testing.c -o rtos_iosc_testing -ldl
-// then run like:
-// ./rtos_iosc_testing 0xdfe 0x18 /dev/kds 
-// tends to lead to a crash which can also bring down the whole OS, probably not cleaning up something
 
 
 int main(int argc, char **argv){
@@ -32,6 +20,11 @@ int main(int argc, char **argv){
 			unsigned short unknown;
 			char data[1012];
 		} ioread;
+		struct{
+			int code;
+			char *data;
+			char padding[1016];
+		} iowrite;
 	} buffer;
 
 	if (argc < 4) {
@@ -63,6 +56,7 @@ int main(int argc, char **argv){
 
 		if (argc < 5) break;
 	}
+
 	OSAL_s32IOClose(fp);
 	cleanup();
 	return EXIT_SUCCESS;

@@ -35,7 +35,8 @@ int main(int argc, char **argv){
     int fp = OSAL_IOOpen(argv[1],4);
     if(fp == 0xffffffff) {
         printf("No such device: %s\n",argv[1]);
-        return 1;
+    cleanup();
+    return 1;
     }
 
     printf("listing registry key: %s\n",argv[1]);
@@ -49,7 +50,7 @@ int main(int argc, char **argv){
     readbuff[3] = 0;
     int b = 0 ; 
     printf("subkey:\n");
-    while ( b =  OSAL_s32IOControl(fp,5,(char*)&readbuff) != -1){
+    while ( b =  OSAL_s32IOControl(fp,5,(int*)&readbuff) != -1){
     printf("%s\n",(char*)&readbuff[2]);
     }
  
@@ -60,7 +61,7 @@ int main(int argc, char **argv){
     readbuff[1] = 0;
     readbuff[2] = 0;
     readbuff[3] = 0;
-    while( b = OSAL_s32IOControl(fp,2,(char*)&readbuff) != -1){
+    while( b = OSAL_s32IOControl(fp,2,(int*)&readbuff) != -1){
     printf("%s\n",(char*)&readbuff[2]);
     }
     
@@ -69,7 +70,7 @@ int main(int argc, char **argv){
     readbuff[1] = 200;
     readbuff[2] = 0;
     readbuff[3] = (unsigned int)&b2;
-     b = OSAL_s32IOControl(fp,1,(char *)&readbuff);
+     b = OSAL_s32IOControl(fp,1,(int *)&readbuff);
     printf("value read retval %d %d %d %ld\n",b,readbuff[2],b2[0],b1[1]);
     printf("data: %s", b2); // some key values are actually strings
 

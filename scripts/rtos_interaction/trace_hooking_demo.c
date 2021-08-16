@@ -21,7 +21,7 @@ int main(int argc, char **argv){
 	printf("OsalData in SHM: %p\n", (void *)*pOsalData);
     uint8_t *enable_logging = (uint8_t*)(*pOsalData + 0x2cd49);
     printf("Tracing? %x\n", *(char *)(*pOsalData + 0x2cd49 ));
-    *enable_logging = 1;
+    *enable_logging = 4;
     printf("Tracing? %x\n", *(char *)(*pOsalData + 0x2cd49 ));
 
 
@@ -38,6 +38,9 @@ int main(int argc, char **argv){
     			break;
     	case 4:
     			vSysCallbackHandler(argv[2]);
+    			break;
+    	case 5:
+    			vWriteErrmemToMassstorage(30);
     			break;
     }
 

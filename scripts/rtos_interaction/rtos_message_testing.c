@@ -77,7 +77,9 @@ int main(int argc, char **argv){
 
     // it seems like all valid messages should start with 0xdaca
     //dump((char*)(p),message->numBytes);    printf("\n\n");
-
+    //mgk:0x10daca unk2: 0xffffffff #blk:42 sndr:10041 rcvr: 265 sz:476 unk3:0x02 unk4:0x0 typ:69 s_sub:0x00, d_sub:0x00, time:94308 serv_id:11, unk5:0x06, fn:65 op:6
+   // if(p->func_id != 65 || p->opcode != 6 || p->serv_id != 11) continue;
+    //system("clear");
     printf("mgk:0x%04x unk2: 0x%04x #blk:%d sndr:%d rcvr: %d sz:%d unk3:0x%02x unk4:0x%01x typ:%d s_sub:0x%02x, d_sub:0x%02x, time:%d serv_id:%d, unk5:0x%02x, fn:%d op:%d\n"
              ,p->magic
              ,p->unknown2
@@ -95,7 +97,7 @@ int main(int argc, char **argv){
              ,p->unknown5
              ,p->func_id
              ,p->opcode);
-    dump((char*)(p),p->blocks*12);
+    dump((char*)(p),(p->blocks*12));
     fflush(0);
 }
 
