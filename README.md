@@ -15,6 +15,8 @@ For a quick guide on how to root your own Nissan head unit follow: [Rootshell Ho
 
 For an overview of the whole system: [System overview](docs/system_overview.md)
 
+For an in-depth overview of Intra-process and Intra-OS interactions: [Intra-process and Intra-OS Communication](docs/rtos_interaction.md) and [Sample code](rtos_interaction/)
+
 For a sample custom extension: [Example of a custom extension - GPS logger](docs/custom_apps_and_gps.md)
 
 
