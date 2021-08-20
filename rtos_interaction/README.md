@@ -1,5 +1,6 @@
 This directory contains a couple of simple programs that demonstrate how to use some of the OSAL APIs.
 
+Be sure to check out the extensive writeup:  [Intra-process and Intra-OS Communication](docs/rtos_interaction.md) 
 
 To build:
 ```
