@@ -44,7 +44,7 @@ At first glance, these appear to be an unknown file format with various string r
 00000050: 0f00 0e00 065c 026c 0301 3480 0000 6c00  .....\.l..4...l.
 ```
 
-Rudimentary reverse engineering reveals these to actually LZO compressed ELF files with a custom LZO header. You can find a script called `inflate_bins.py` that perfectly decompresses these.
+Rudimentary reverse engineering reveals these to actually LZO compressed ELF files with a custom LZO header. You can see a script called `inflate_bins.py` in `rtos_interactions` that perfectly decompresses these.
 
 ```
 d_len , c_len ,ecrc32= struct.unpack("III",cd[24:36])
@@ -187,7 +187,7 @@ Much to my amusement, it was discovered that configuration for RTOS and Linux pr
 
 ```
 
-All of registry contents is accessed through `/dev/registry` and all of contents is under `/dev/registry/LOCAL_MACHINE/SOFTWARE/BLAUPUNKT/`. Proof of concept implementation of registry interactions is in `rtos_registry_testing.c`. It's fairly easy to dump out the whole thing. Interacting with the registry is a good demonstration of using libOSAL APIs:
+All of registry contents is accessed through `/dev/registry` and all of contents is under `/dev/registry/LOCAL_MACHINE/SOFTWARE/BLAUPUNKT/`. Proof of concept implementation of registry interactions is in `rtos_interactions/rtos_registry_testing.c`. It's fairly easy to dump out the whole thing. Interacting with the registry is a good demonstration of using libOSAL APIs:
 
 ```
   	int fp = OSAL_IOOpen(argv[1],4); // registry path we want to access
