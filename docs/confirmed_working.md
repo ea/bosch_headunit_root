@@ -16,7 +16,8 @@
   - FW: F107, HW: 051
 - 2018 Nissan Pulsar
   - FW: D554, HW: 037
-
+- 2018 Nissan NV 3500
+  - FW: D603, HW: 034
 
 # Confirmed not working
 
