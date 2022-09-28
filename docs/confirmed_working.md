@@ -18,6 +18,8 @@
   - FW: D554, HW: 037
 - 2018 Nissan NV 3500
   - FW: D603, HW: 034
+- 2018 Nissan Juke Nismo RS
+  - FW: D502, HW: 037
 
 # Confirmed not working
 
