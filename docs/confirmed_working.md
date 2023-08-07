@@ -20,6 +20,8 @@
   - FW: D603, HW: 034
 - 2018 Nissan Juke Nismo RS
   - FW: D502, HW: 037
+- 2018 Nissan X-Trail T32 (EU)
+  -  FW: F106, HW: 034
 
 # Confirmed not working
 
