@@ -22,6 +22,8 @@
   - FW: D502, HW: 037
 - 2018 Nissan X-Trail T32 (EU)
   -  FW: F106, HW: 034
+- 2019 Nissan Juke Bose Personal Edition
+  - FW: D602, D605 
 
 # Confirmed not working
 
